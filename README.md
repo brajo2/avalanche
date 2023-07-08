@@ -22,7 +22,7 @@ For the first part of this project, we’d like you to imagine that you’re bei
      - It may also be important to have LIVE data for the sake of dashboards and perhaps real-time strategical decision support. 
 
   I also think that leveraging yml for configurations is useful. We can easily change the configuration to grab data from different countries based on the output of the YAML file. For example:
-  ```
+```
   ---
   country: usa
     - players
@@ -32,7 +32,7 @@ For the first part of this project, we’d like you to imagine that you’re bei
     - players
     - league_schedule
     - teams
-  ```
+```
 
 
 #### 2. How would you go about the process of reading in and storing this information, as well as updating it on a regular basis? Schemas are encouraged.
@@ -41,6 +41,7 @@ For the first part of this project, we’d like you to imagine that you’re bei
      - Arguably there could be one schema if the rules for each data ingestion and transformation process are the same, but in the case that it is not, separate schemas could be helpful.
      - Leagues could have their own schemas if certain data may need to be handled differently based on language, rule settings, etc.
 
+```
     Schema: usa
         players
         league_schedule
@@ -81,12 +82,15 @@ For the first part of this project, we’d like you to imagine that you’re bei
         play_by_play_data
     
     Schema: olympics
+    ...
+```
 
-    [sample sketch of a few tables](sample_table_sketch.pdf)
-    Ideally we want data to be prepared in a way that could give us timelines of prospect development, so that we can be equipped to predict a range of future outcomes for a player based on available data.
+[sample sketch of a few tables](sample_table_sketch.pdf)
+Ideally we want data to be prepared in a way that could give us timelines of prospect development, so that we can be equipped to predict a range of future outcomes for a player based on available data.
 
-   Here's an idea of how I would create the tables & schemas programmatically 
-   ```
+Here's an idea of how I would create the tables & schemas programmatically 
+   
+```
     CREATE SCHEMA IF NOT EXISTS usa;
     CREATE SCHEMA IF NOT EXISTS canada;
     CREATE SCHEMA IF NOT EXISTS russia;
@@ -133,7 +137,7 @@ For the first part of this project, we’d like you to imagine that you’re bei
         injury_status VARCHAR(255),
         FOREIGN KEY (player_id) REFERENCES nhl.players(player_id)
     );
-   ```
+```
     - Something to consider if potential data duplication. For example if a player has been a prospect in leagues in two different countries, unless there's a universal ID for that particular player (which there very well might be) their basic info would need to be stored in each schema, which could influence duplication.
     - But, if there's no universal ID, there may be another way that we can parse out an ID that we can later use in datamarts. (Similar to how hockey-reference would use a player's last name and first name to create a unique ID for each player: https://www.hockey-reference.com/players/k/kiselbo01.html)
     - Something else to consider would be ETL structure, if there are significant difference in how data would need to be processed, or perhaps external data sources that would be perfect to use for a given country's propsect data, then there may need to be extra steps to handle those cases. But the sturcutre of ETLs should be considered in order to lower the probability that we're writing boilerplate code.
@@ -150,7 +154,7 @@ For the first part of this project, we’d like you to imagine that you’re bei
 #### 4. What are some of the ways that you can ensure that any data errors that stem from the ETL process are caught and fixed in a timely and effective fashion?
    - Running validations over data that's processed during the pipeline can help catch errors early on, and depending upon the infrastructure, it may even be possible to use Slack / email notifications to alert data engineers of errors (or end users).
      - For example, if a player's height is 0, then that's a clear error that can be caught early. We can write Python scripts to validate data ingested, or we can write SQL scripts to validate data ingested. And then execute the necessary logic to notify the appropriate parties and fix the data.
-    ```
+```
       def validate_player_height(player_height):
         if player_height == 0:
           raise ValueError("Player height cannot be 0")
@@ -170,7 +174,7 @@ For the first part of this project, we’d like you to imagine that you’re bei
             return True
           else:
             raise ValueError("Player ID cannot be duplicated")
-    ```
+```
    -  Also writing testing (generally use pytest module) for the ETLs can help us catch errors during CICD, which can prevent us from productionizing code that would create those errors for downstream.
 -----------------------
 ### Part 2
