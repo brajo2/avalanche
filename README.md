@@ -53,15 +53,41 @@ The following are more general data engineering questions:
     - Structured data is much like a spreadsheet, where each row is a record and each column is a field. It's easy to read, ingest and store, like a CSV, TXT, or EXCEL file.
     - Unstructured data is much like a blob of text, where it's not easy to read, ingest and store, like a JSON file or XML file. There's methodology to parse JSON with Python, Postgres, Snowflake, etc., but it's not quite as easy as reading a CSV file.
     - For the sake of data scientists, analysts, end-users, if someone was to ask for a raw data dump, it'd be much easier to give them a CSV file than a JSON file, because they can easily read the CSV file in Excel. 
+
 4. What are the four/five Vs of big data and why are they important?
    - Volume
      - How much data is being processed? Because that will determine whether we may need to use a larger data warehouse like Snowflake, or if we can get away with using a smaller data warehouse like Postgres. It'd also determine whether we ought to write ETLs in SQL to create our derived data, or if we can use Python. And within Python, should we be using Pandas or PySpark, etc.? Should we be storing data within AWS S3?
-   - Velocity: the speed at which data is being processed
-   - Variety: the different types of data that is being processed
-   - Veracity: the quality of data that is being processed
-   - Value: the value of the data that is being processed
+   - Velocity
+      - This is so important because it determines how quickly we need to process data. 
+      - Are we processing real-time data? Do we need to update a live dashboard with data we're getting in a few seconds before?
+      - Are we trying to run our analytics-based ETLs before a certain time in the morning for DS/DA consumption? 
+      - Do we need to process data before the start of a game?
+      - The more data we can process in a shorter amount of time, the more we can do with that data.
+   - Variety
+      - We discussed structured vs unstructured data above, but besides text there's possibility that we need to store video, images or audio. 
+      - that gives more creative control to data scientists and software engineers to create more interesting models that could even provide competitive advantage. Play-by-play alone cannot completely tell the story with regards to a player's value above replacement or assessing a prospect's feel for the game, but storing video data could be helpful for that.
+   - Veracity
+       - This is exactly why validations and testing is so important. If downstream data is incorrect and that data is used for modeling, then the model loses some of its value, from a predictive and descriptive perspective.
+   - Value
 5. What is a common mistake that rookie data engineers make that you’ve learned to avoid?
-Part 3
+   - Being too one-dimensional with the way that an ETL is written.
+     - Writing an ETL so that it only serves one purpose, even if it were a scalable concept, so that the code could be reusable for a different configuration of data.
+   - Not writing enough tests for the ETLs.
+     - I've been guilty of this, but I've learned to think about potential issues that can arise within ETLs, as it's easy to miss something that could cause an error downstream.
+   - Writing code that is too obscure and not providing documentation.
+     - It's cool to use a lot of Py libraries, or make something complicated, but it's better to be able to remember what you did and why you did it, and to be able to explain it to someone else.
+
+
+### Part 3
 The following are hockey and data science related questions:
 1. What would some of the issues be with using exclusively player point totals to determine who the best hockey players in the NHL are?
+    - This is a question pervasive among all sports, I think. In basketball, raw boxscore stats and old school metrics like PER (player efficiency rating) had been used historically to evaluate, but those metrics are not engineered to tease out the individual value of a player, or the potential value for a player within a different team context.
+    - In football, newer school metrics like EPA (expected points added) and CPOE (completion percentage over expected) have been used, but historically yards, touchdowns, interceptions have been strongly clung to.
+    - Baseball might be the only sport that has been able to transition.
+    - On / off stints become important to tease out player value, and point totals are variable & subject to randomness. So if we are to take a results-based approach to predictive modeling, then we'd struggle to create a reliable model for new situations.
+
 2. How would you go about creating an NHL aging curve for players? What would your critiques be of your own method and what are some of the challenges that come with this task?
+   - An aging curve model may be somewhat out of my main wheelhouse, but a model that includes dependent variables like age, age^2, age^3, age^4, etc. could be used to predict a player's WAR (wins above replacement) for the next season.
+   - A polynomial regression that is trained understanding the general rise and descent of a player's career could be used to predict a player's WAR for the next season.
+   - Also more recently, in plus-minus statistics in the basketball community, exponential decay has been a concept important to future predictions as well. 
+   - It'd also be important to remember that as player age, they leave the league, therefore some of the observations we'd need to be using would come from players that are no longer in the league. So we'd need to be careful about how we handle that. We'd probably need to pad the observational data with some sort of replacement level player.
